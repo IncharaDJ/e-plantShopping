@@ -7,17 +7,9 @@ import {
   removeItem,
 } from "./CartSlice";
 
-const CartItem = ({ item, cartItems = [] }) => {
+const CartItem = ({ item }) => {
   const dispatch = useDispatch();
 
-  // Calculate total amount for all cart items
-  const cartTotal = cartItems.reduce(
-    (total, cartItem) =>
-      total + cartItem.price * cartItem.quantity,
-    0
-  );
-
-  // Decrease quantity, and remove item if quantity becomes zero
   const handleDecrease = () => {
     if (item.quantity <= 1) {
       dispatch(removeItem(item.id));
@@ -37,9 +29,7 @@ const CartItem = ({ item, cartItems = [] }) => {
       <div>
         <h3>{item.name}</h3>
 
-        <p>
-          Price: ₹{item.price}
-        </p>
+        <p>Price: ₹{item.price}</p>
 
         <div>
           <button onClick={handleDecrease}>
@@ -71,18 +61,11 @@ const CartItem = ({ item, cartItems = [] }) => {
           Remove
         </button>
       </div>
-
-      {cartItems.length > 0 && (
-        <div className="cart-total">
-          <h2>
-            Total Cart Amount: ₹{cartTotal}
-          </h2>
-        </div>
-      )}
     </div>
   );
 };
 
 export default CartItem;
 ```
+
 
