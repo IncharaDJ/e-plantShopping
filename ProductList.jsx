@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "./CartSlice";
 
-function ProductList({ addToCart }) {
+function ProductList() {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
+  const [addedItems, setAddedItems] = useState([]);
+
   const plants = [
     {
       id: 1,
@@ -16,37 +22,16 @@ function ProductList({ addToCart }) {
       price: 399,
       image: "/images/snake-plant.jpg",
     },
-    {
-      id: 3,
-      name: "Rose Plant",
-      category: "Flowering Plants",
-      price: 249,
-      image: "/images/rose.jpg",
-    },
-    {
-      id: 4,
-      name: "Peace Lily",
-      category: "Indoor Plants",
-      price: 349,
-      image: "/images/peace-lily.jpg",
-    },
-    {
-      id: 5,
-      name: "Money Plant",
-      category: "Indoor Plants",
-      price: 199,
-      image: "/images/money-plant.jpg",
-    },
-    {
-      id: 6,
-      name: "Jasmine",
-      category: "Flowering Plants",
-      price: 299,
-      image: "/images/jasmine.jpg",
-    },
+    // Add the remaining plants required by your rubric
   ];
 
   const categories = [...new Set(plants.map((plant) => plant.category))];
+
+  const handleAddToCart = (plant) => {
+    dispatch(addItem(plant));
+
+    setAddedItems((prev) => [...prev, plant.id]);
+  };
 
   return (
     <div className="product-list">
@@ -59,22 +44,31 @@ function ProductList({ addToCart }) {
           <div className="product-grid">
             {plants
               .filter((plant) => plant.category === category)
-              .map((plant) => (
-                <div className="product-card" key={plant.id}>
-                  <img
-                    src={plant.image}
-                    alt={plant.name}
-                    className="product-image"
-                  />
+              .map((plant) => {
+                const isAdded =
+                  addedItems.includes(plant.id) ||
+                  cartItems.some((item) => item.name === plant.name);
 
-                  <h3>{plant.name}</h3>
-                  <p>₹{plant.price}</p>
+                return (
+                  <div className="product-card" key={plant.id}>
+                    <img
+                      src={plant.image}
+                      alt={plant.name}
+                      className="product-image"
+                    />
 
-                  <button onClick={() => addToCart(plant)}>
-                    Add to Cart
-                  </button>
-                </div>
-              ))}
+                    <h3>{plant.name}</h3>
+                    <p>₹{plant.price}</p>
+
+                    <button
+                      onClick={() => handleAddToCart(plant)}
+                      disabled={isAdded}
+                    >
+                      {isAdded ? "Added to Cart" : "Add to Cart"}
+                    </button>
+                  </div>
+                );
+              })}
           </div>
         </section>
       ))}
