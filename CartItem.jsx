@@ -1,3 +1,4 @@
+```jsx
 import React from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -6,8 +7,24 @@ import {
   removeItem,
 } from "./CartSlice";
 
-const CartItem = ({ item }) => {
+const CartItem = ({ item, cartItems = [] }) => {
   const dispatch = useDispatch();
+
+  // Calculate total amount for all cart items
+  const cartTotal = cartItems.reduce(
+    (total, cartItem) =>
+      total + cartItem.price * cartItem.quantity,
+    0
+  );
+
+  // Decrease quantity, and remove item if quantity becomes zero
+  const handleDecrease = () => {
+    if (item.quantity <= 1) {
+      dispatch(removeItem(item.id));
+    } else {
+      dispatch(decreaseQuantity(item.id));
+    }
+  };
 
   return (
     <div className="cart-item">
@@ -19,10 +36,13 @@ const CartItem = ({ item }) => {
 
       <div>
         <h3>{item.name}</h3>
-        <p>Price: ₹{item.price}</p>
+
+        <p>
+          Price: ₹{item.price}
+        </p>
 
         <div>
-          <button onClick={() => dispatch(decreaseQuantity(item.id))}>
+          <button onClick={handleDecrease}>
             -
           </button>
 
@@ -30,7 +50,11 @@ const CartItem = ({ item }) => {
             {item.quantity}
           </span>
 
-          <button onClick={() => dispatch(increaseQuantity(item.id))}>
+          <button
+            onClick={() =>
+              dispatch(increaseQuantity(item.id))
+            }
+          >
             +
           </button>
         </div>
@@ -39,12 +63,26 @@ const CartItem = ({ item }) => {
           Total: ₹{item.price * item.quantity}
         </p>
 
-        <button onClick={() => dispatch(removeItem(item.id))}>
+        <button
+          onClick={() =>
+            dispatch(removeItem(item.id))
+          }
+        >
           Remove
         </button>
       </div>
+
+      {cartItems.length > 0 && (
+        <div className="cart-total">
+          <h2>
+            Total Cart Amount: ₹{cartTotal}
+          </h2>
+        </div>
+      )}
     </div>
   );
 };
 
 export default CartItem;
+```
+
