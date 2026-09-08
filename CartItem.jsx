@@ -1,65 +1,36 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import {
-  increaseQuantity,
-  decreaseQuantity,
-  removeItem,
-} from "./CartSlice";
+import { useSelector } from "react-redux";
+import CartItem from "./CartItem";
 
-const CartItem = ({ item }) => {
-  const dispatch = useDispatch();
+const Cart = () => {
+  const cartItems = useSelector((state) => state.cart.items);
 
-  // Dedicated function for item total
-  const calculateTotalAmount = () => {
-    return item.price * item.quantity;
-  };
-
-  // Decrease quantity and remove when it reaches zero
-  const handleDecrease = () => {
-    if (item.quantity <= 1) {
-      dispatch(removeItem(item.id));
-    } else {
-      dispatch(decreaseQuantity(item.id));
-    }
-  };
-
-  const handleIncrease = () => {
-    dispatch(increaseQuantity(item.id));
+  const calculateCartTotal = () => {
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
   };
 
   return (
-    <div className="cart-item">
-      <img
-        src={item.image}
-        alt={item.name}
-        width="100"
-      />
+    <div className="cart">
+      <h1>Your Cart</h1>
 
-      <div>
-        <h3>{item.name}</h3>
+      {cartItems.length === 0 ? (
+        <p>Your cart is empty</p>
+      ) : (
+        <>
+          {cartItems.map((item) => (
+            <CartItem key={item.id} item={item} />
+          ))}
 
-        <p>Price: ₹{item.price}</p>
-
-        <div>
-          <button onClick={handleDecrease}>-</button>
-
-          <span style={{ margin: "0 10px" }}>
-            {item.quantity}
-          </span>
-
-          <button onClick={handleIncrease}>+</button>
-        </div>
-
-        <p>
-          Total: ₹{calculateTotalAmount()}
-        </p>
-
-        <button onClick={() => dispatch(removeItem(item.id))}>
-          Remove
-        </button>
-      </div>
+          <h2>
+            Total Cart Amount: ₹{calculateCartTotal()}
+          </h2>
+        </>
+      )}
     </div>
   );
 };
 
-export default CartItem;
+export default Cart;
