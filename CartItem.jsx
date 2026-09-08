@@ -25,7 +25,7 @@ const Cart = () => {
           ))}
 
           <h2>
-            Total Cart Amount: ₹{calculateCartTotal()}
+            Total Amount: ₹{calculateCartTotal()}
           </h2>
         </>
       )}
