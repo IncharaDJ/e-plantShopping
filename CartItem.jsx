@@ -1,4 +1,3 @@
-```jsx
 import React from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -10,12 +9,22 @@ import {
 const CartItem = ({ item }) => {
   const dispatch = useDispatch();
 
+  // Dedicated function for item total
+  const calculateTotalAmount = () => {
+    return item.price * item.quantity;
+  };
+
+  // Decrease quantity and remove when it reaches zero
   const handleDecrease = () => {
     if (item.quantity <= 1) {
       dispatch(removeItem(item.id));
     } else {
       dispatch(decreaseQuantity(item.id));
     }
+  };
+
+  const handleIncrease = () => {
+    dispatch(increaseQuantity(item.id));
   };
 
   return (
@@ -32,32 +41,20 @@ const CartItem = ({ item }) => {
         <p>Price: ₹{item.price}</p>
 
         <div>
-          <button onClick={handleDecrease}>
-            -
-          </button>
+          <button onClick={handleDecrease}>-</button>
 
           <span style={{ margin: "0 10px" }}>
             {item.quantity}
           </span>
 
-          <button
-            onClick={() =>
-              dispatch(increaseQuantity(item.id))
-            }
-          >
-            +
-          </button>
+          <button onClick={handleIncrease}>+</button>
         </div>
 
         <p>
-          Total: ₹{item.price * item.quantity}
+          Total: ₹{calculateTotalAmount()}
         </p>
 
-        <button
-          onClick={() =>
-            dispatch(removeItem(item.id))
-          }
-        >
+        <button onClick={() => dispatch(removeItem(item.id))}>
           Remove
         </button>
       </div>
@@ -66,11 +63,3 @@ const CartItem = ({ item }) => {
 };
 
 export default CartItem;
-```
-removeItem: (state, action) => {
-  state.items = state.items.filter(
-    (item) => item.name !== action.payload
-  );
-}
-
-
