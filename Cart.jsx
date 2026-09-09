@@ -5,22 +5,28 @@ import CartItem from "./CartItem";
 const Cart = () => {
   const cartItems = useSelector((state) => state.cart.items);
 
-  const calculateTotalAmount = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  };
+  const totalAmount = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   return (
-    <div>
+    <div className="cart">
       <h2>Shopping Cart</h2>
 
-      {cartItems.map((item) => (
-        <CartItem key={item.id} item={item} />
-      ))}
+      {cartItems.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        <>
+          {cartItems.map((item) => (
+            <CartItem key={item.id} item={item} />
+          ))}
 
-      <h2>Total Cart Amount: ₹{calculateTotalAmount()}</h2>
+          <div className="cart-total">
+            <h2>Total Cart Amount: ₹{totalAmount}</h2>
+          </div>
+        </>
+      )}
     </div>
   );
 };
