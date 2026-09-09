@@ -1,34 +1,97 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import CartItem from "./CartItem";
+import { useSelector, useDispatch } from "react-redux";
+import { removeItem, updateQuantity } from "./CartSlice";
 
-const Cart = () => {
-  const cartItems = useSelector((state) => state.cart.items);
+const CartItem = ({ onContinueShopping }) => {
+  const cart = useSelector((state) => state.cart.items);
+  const dispatch = useDispatch();
 
-  const totalAmount = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const parseCost = (cost) => {
+    return parseFloat(String(cost).replace("$", ""));
+  };
+
+  const calculateTotalAmount = () => {
+    return cart.reduce(
+      (total, item) => total + item.quantity * parseCost(item.cost),
+      0
+    );
+  };
+
+  const calculateTotalCost = (item) => {
+    return item.quantity * parseCost(item.cost);
+  };
+
+  const handleIncrement = (item) => {
+    dispatch(
+      updateQuantity({
+        name: item.name,
+        quantity: item.quantity + 1,
+      })
+    );
+  };
+
+  const handleDecrement = (item) => {
+    if (item.quantity > 1) {
+      dispatch(
+        updateQuantity({
+          name: item.name,
+          quantity: item.quantity - 1,
+        })
+      );
+    } else {
+      dispatch(removeItem(item.name));
+    }
+  };
+
+  const handleRemove = (item) => {
+    dispatch(removeItem(item.name));
+  };
 
   return (
-    <div className="cart">
-      <h2>Shopping Cart</h2>
+    <div className="cart-container">
+      <h2>Total Cart Amount: ${calculateTotalAmount()}</h2>
 
-      {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <>
-          {cartItems.map((item) => (
-            <CartItem key={item.id} item={item} />
-          ))}
+      {cart.map((item) => (
+        <div className="cart-item" key={item.name}>
+          <img
+            className="cart-item-image"
+            src={item.image}
+            alt={item.name}
+          />
 
-          <div className="cart-total">
-            <h2>Total Cart Amount: ₹{totalAmount}</h2>
+          <div className="cart-item-details">
+            <h3>{item.name}</h3>
+
+            <p>Price: {item.cost}</p>
+
+            <div className="cart-item-quantity">
+              <button onClick={() => handleDecrement(item)}>
+                -
+              </button>
+
+              <span>{item.quantity}</span>
+
+              <button onClick={() => handleIncrement(item)}>
+                +
+              </button>
+            </div>
+
+            <p>
+              Total: ${calculateTotalCost(item)}
+            </p>
+
+            <button onClick={() => handleRemove(item)}>
+              Delete
+            </button>
           </div>
-        </>
-      )}
+        </div>
+      ))}
+
+      <button onClick={onContinueShopping}>
+        Continue Shopping
+      </button>
     </div>
   );
 };
 
-export default Cart;
+export default CartItem;
